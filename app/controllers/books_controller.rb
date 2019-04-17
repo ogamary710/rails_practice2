@@ -8,6 +8,7 @@ class BooksController < ApplicationController
 
   def show
     @book = Book.find(params[:id])
+    @post_comment = PostComment.new
   end
 
   def edit
@@ -24,6 +25,14 @@ class BooksController < ApplicationController
       @books = Book.all
       render 'index'
     end
+  end
+
+  def createcomment
+    book = Book.find(params[:id])
+    comment = current_user.post_comments.new(post_comment_params)
+    comment.book_id = book.id
+    comment.save
+    redirect_to book_path(book)
   end
 
   def update
@@ -44,6 +53,12 @@ class BooksController < ApplicationController
   private
     def book_params
       params.require(:book).permit(:title, :body)
+    end
+
+    def post_comment_params
+      params.require(:post_comment).permit(:user_id,
+                          :book_id,
+                          :comment)
     end
 
     def screen_user(book)
